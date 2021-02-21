@@ -20,6 +20,8 @@ typedef struct vectorContentsOperations {
 
 /* Some predefined vectorContentsOperations structures */
 // make them available for clients
+
+
 extern VectorContentsOperations VectorIntOps;
 extern VectorContentsOperations VectorStringOps;
 
@@ -56,6 +58,7 @@ typedef struct vector_t *vector;
 
 /* create a new vector with given operations */
 vector vector_create(VectorContentsOperations ops);
+/* destroy the created vector */
 void vector_destroy(vector v);
 
 #endif //__VECTOR_H_
