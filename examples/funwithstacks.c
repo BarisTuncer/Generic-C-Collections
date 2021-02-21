@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "stack.h"
 
+// run also with valgrind to check that there is no memory leak
 int main(){
     stack s = stack_create(StackStringOps);
     printf("s is of size = %zu\n", s->size(s));
@@ -20,12 +21,16 @@ int main(){
     s->pop(s);
     q->print(s);
     q->print(q);
+    char *temp;
+    temp = (char *)q->top(q);
     while(!q->empthy(q)) {
         printf("q = "); q->print(q);
+        printf("top of q = %s\n", temp);
         q->pop(q);
+        temp = (char *)q->top(q);
     }
 
-    char *temp = (char *)s->top(s);
+    temp = (char *)s->top(s);
     printf("top of s = %s\n", temp);
     stack_destroy(s);
     stack_destroy(q);
