@@ -13,6 +13,7 @@ endif()
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
 option(ENABLE_CODE_COVERAGE "Perform coverage report after build" ON)
+
 if(ENABLE_CODE_COVERAGE)
     message(STATUS "Coverage executables will be generated")    
     set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake-modules)

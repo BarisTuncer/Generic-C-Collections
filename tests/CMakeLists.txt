@@ -1,4 +1,4 @@
-#project(LibTests)
+
 if(ENABLE_TESTING)
     message(STATUS "Test executable for test_vector will be created")
     add_executable(test_vector test_vector.c)
