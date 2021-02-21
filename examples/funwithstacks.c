@@ -29,4 +29,9 @@ int main(){
     printf("top of s = %s\n", temp);
     stack_destroy(s);
     stack_destroy(q);
+
+    printf("\n##########  size of stack struct ###################\n");
+    printf("size of int on this machine, is : %zu bytes\n", sizeof(int));
+    printf("size of stack ( = stack_t *) , is : %zu bytes = %.2f ints \n", sizeof(stack), 1.0*sizeof(stack)/sizeof(int));
+    printf("size of stack_t is : %zu bytes  = %.2f ints\n", sizeof(struct stack_t), 1.0*sizeof(struct stack_t)/sizeof(int));
 }
