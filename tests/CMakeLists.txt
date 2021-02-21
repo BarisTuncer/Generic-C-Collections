@@ -6,6 +6,7 @@ if(ENABLE_TESTING)
     target_compile_definitions(test_vector PUBLIC TESTING)
     target_link_libraries(test_vector asan vector cmocka)
     add_test(NAME test_vector COMMAND test_vector)
+    set_tests_properties(test_vector PROPERTIES TIMEOUT 30)
 
     if(ENABLE_CODE_COVERAGE)
         #[[ now include code coverage
