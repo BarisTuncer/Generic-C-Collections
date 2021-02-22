@@ -71,33 +71,33 @@ static int vectorEmployeeCompare(const void *x, const void *y){
 VectorContentsOperations VectorEmployeeOps = { vectorEmployeeEqual, vectorEmployeeCopy, vectorEmployeeFree, vectorEmployeePrint, vectorEmployeeCompare};
 
 
-/* Exp: Vector of int vectors */
+/* Exp: Vector of vectors */
 
-static int vectorIntVectorEqual(const void *x, const void *y){
+static int vectorVectorEqual(const void *x, const void *y){
     vector v = (vector)x;
     vector w = (vector)y;
     return v->equal(v,w);
 }
 
-static void *vectorIntVectorCopy(const void *x){ 
+static void *vectorVectorCopy(const void *x){ 
     vector v = (vector)x;
-    vector w = vector_create(VectorIntOps);
+    vector w = vector_create(v->ops);
     w->assign(w,v);
     return (void *)w;
 }
 
-static void vectorIntVectorFree(void *x) {
+static void vectorVectorFree(void *x) {
     vector v = (vector)x;
     vector_destroy(v);
 }
 
 // optional if printing needed, else set to NULL
-static void vectorIntVectorPrint(const void *x){ 
+static void vectorVectorPrint(const void *x){ 
     vector v = (vector)x;
     v->print(v);
 }
 
-VectorContentsOperations VectorIntVectorOps = { vectorIntVectorEqual, vectorIntVectorCopy, vectorIntVectorFree, vectorIntVectorPrint, NULL};
+VectorContentsOperations VectorVectorOps = { vectorVectorEqual, vectorVectorCopy, vectorVectorFree, vectorVectorPrint, NULL};
 
 
 // also run with Valgrind 
@@ -159,6 +159,16 @@ int main(){
     printf("v shouldn't have changed\n");
     printf("v = "); v->print(v);
 
+    printf("Vector of vectors!\n");
+    vector vov = vector_create(VectorVectorOps);
+    vov->push_back(vov,(void *)v);
+    vov->push_back(vov,(void *)v3);
+    printf("vov = "); vov->print(vov);
+    vector tempvec = (vector)vov->at(vov,0);
+    char *forvov = "Olala";
+    tempvec->push_back(tempvec,forvov);
+    printf("vov = "); vov->print(vov);
+
     printf("Erasing 2 elements starting from index 1\n");
     v->erase(v,1,2);
     printf("v = "); v->print(v);
@@ -214,6 +224,7 @@ int main(){
     vector_destroy(v);
     vector_destroy(v2);
     vector_destroy(v3);
+    vector_destroy(vov);
     printf("string vectors v and v2 were deleted\n");    
 
     printf("These guys should be alive (except a since we set it to point b ) and un-effected: %s %s %s %s %s \n", a, b, c, d, e);
@@ -255,8 +266,8 @@ int main(){
     removeConsecutiveDuplicatesInPlace(w);
     printf("w = "); w2->print(w);
 
-    printf("Vector of int vectors!\n");
-    vector vv = vector_create(VectorIntVectorOps);
+    printf("Vector of vectors!\n");
+    vector vv = vector_create(VectorVectorOps);
     vv->push_back(vv,w);
     vv->push_back(vv,w2);
     printf("vv = "); vv->print(vv);
