@@ -18,11 +18,13 @@ typedef struct stackContentsOperations {
 typedef struct stackBuffer_t *StackBuffer;
 
 struct stack_t{
+    // private members: safe buffer and content operations
     StackBuffer sbuf;
     StackContentsOperations ops;
+    // public members:
     // element access
     void *(*top)(struct stack_t *);
-    // capactiy
+    // capacity
     bool (*empthy)(struct stack_t *);
     size_t (*size)(struct stack_t *v);
     // modifiers

@@ -25,7 +25,7 @@ struct queue_t{
     // element access
     void *(*front)(struct queue_t *);
     void *(*back)(struct queue_t *);
-    // capactiy
+    // capacity
     bool (*empthy)(struct queue_t *);
     size_t (*size)(struct queue_t *v);
     // modifiers
@@ -35,7 +35,7 @@ struct queue_t{
     // assignment
     void  (*assign)(struct queue_t *v, struct queue_t *w);
     bool  (*equal)(struct queue_t *v, struct queue_t *w);
-    // info: provided if StackContentsOperations.Print is not NULL
+    // info: provided if QueueContentsOperations.Print is not NULL
     void (*print)(struct queue_t *);
 };
 

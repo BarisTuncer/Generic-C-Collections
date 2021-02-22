@@ -22,17 +22,20 @@ int main(){
     s->pop(s);
     printf("s = "); s->print(s);
     q->print(q);
-    char *temp;
-    temp = (char *)q->front(q);
+    char *front;
+    char *back;
+    front = (char *)q->front(q);
+    back = (char *)q->back(q);
     while(!q->empthy(q)) {
         printf("q = "); q->print(q);
-        printf("front of q = %s\n", temp);
+        printf("front of q = %s, back of q = %s\n", front, back);
         q->pop(q);
-        temp = (char *)q->front(q);
+        front = (char *)q->front(q);
+        back = (char *)q->back(q);
     }
 
-    temp = (char *)s->front(s);
-    printf("front of s = %s\n", temp);
+    front = (char *)s->front(s);
+    printf("front of s = %s\n", front);
     queue_destroy(s);
     queue_destroy(q);
 
