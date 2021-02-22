@@ -4,6 +4,23 @@
 #include <string.h>
 #include "vector.h"
 
+
+static vector *vclean;
+static size_t nclean;
+
+void clean(){
+    for(size_t i=0; i<nclean; i++) vector_destroy(vclean[i]);
+    free(vclean);
+}
+
+vector Vector_create(VectorContentsOperations vop){
+    vector v = vector_create(vop);
+    vclean = realloc(vclean, sizeof(vector)* (nclean + 1));
+    vclean[nclean++] = v;
+    return v;
+}
+
+
 // pass by reference example which is usually the case
 void removeConsecutiveDuplicatesInPlace(vector v){
     if(v->size(v) == 1) return;
@@ -17,7 +34,7 @@ void removeConsecutiveDuplicatesInPlace(vector v){
 
 // in case you need pass by value example
 vector removeConsecutiveDuplicates(vector v, VectorContentsOperations vops){
-    vector w = vector_create(vops); // need to get a copy, not to modify the argument vector
+    vector w = Vector_create(vops); // need to get a copy, not to modify the argument vector
     w->assign(w,v);
     if(w->size(v) == 1) return w;
     for(size_t i=0; i<w->size(w)-1; i++){
@@ -102,8 +119,9 @@ VectorContentsOperations VectorVectorOps = { vectorVectorEqual, vectorVectorCopy
 
 // also run with Valgrind 
 int main(){
-    vector v = vector_create(VectorStringOps);
-    vector v3 = vector_create(VectorStringOps);
+    atexit(clean);   // keep the track of created vectors and cleanup befor the exit
+    vector v = Vector_create(VectorStringOps);
+    vector v3 = Vector_create(VectorStringOps);
     printf("v = "); v->print(v);
     char *a = "Baris";
     char *b = "Tuncer"; 
@@ -160,7 +178,7 @@ int main(){
     printf("v = "); v->print(v);
 
     printf("Vector of vectors!\n");
-    vector vov = vector_create(VectorVectorOps);
+    vector vov = Vector_create(VectorVectorOps);
     vov->push_back(vov,(void *)v);
     vov->push_back(vov,(void *)v3);
     printf("vov = "); vov->print(vov);
@@ -192,7 +210,7 @@ int main(){
     if(ret != -1) printf("%s found at index %d\n", a, ret);
     else printf("%s couldn't be found\n", a);
 
-    vector v2 = vector_create(VectorStringOps);
+    vector v2 = Vector_create(VectorStringOps);
     char *a2 = "C";
     char *b2 = "is"; 
     char *c2 = "alive";
@@ -220,19 +238,12 @@ int main(){
     printf("what about v?\n");
     printf("v = "); v->print(v);
 
-    printf("Deleting string vectors v and v2\n");
-    vector_destroy(v);
-    vector_destroy(v2);
-    vector_destroy(v3);
-    vector_destroy(vov);
-    printf("string vectors v and v2 were deleted\n");    
-
     printf("These guys should be alive (except a since we set it to point b ) and un-effected: %s %s %s %s %s \n", a, b, c, d, e);
     printf("These guys should be alive and un-effected: %s %s %s\n", a2, b2, c2);
 
 
     printf("\n##########   int vectors ###################\n");
-    vector w = vector_create(VectorIntOps);
+    vector w = Vector_create(VectorIntOps);
     time_t t;
     srand((unsigned) time(&t));
 
@@ -267,7 +278,7 @@ int main(){
     printf("w = "); w2->print(w);
 
     printf("Vector of vectors!\n");
-    vector vv = vector_create(VectorVectorOps);
+    vector vv = Vector_create(VectorVectorOps);
     vv->push_back(vv,w);
     vv->push_back(vv,w2);
     printf("vv = "); vv->print(vv);
@@ -277,15 +288,12 @@ int main(){
     printf("vv = "); vv->print(vv);
 
     free(tempbuf);
-    vector_destroy(w);
-    vector_destroy(w2);
-    vector_destroy(vv);
     printf("\n##########   employee vectors ###################\n");
     employee emp1 = (employee)malloc(sizeof(struct employee_t));
     employee emp2 = (employee)malloc(sizeof(struct employee_t));
     emp1->name = "Bob";  emp1->salary= 60000;
     emp2->name = "Mike"; emp2->salary= 80000;
-    vector empvec = vector_create(VectorEmployeeOps);
+    vector empvec = Vector_create(VectorEmployeeOps);
     empvec->push_back(empvec, (void *)emp2);
     empvec->push_back(empvec, (void *)emp1);
     empvec->print(empvec);
@@ -304,7 +312,6 @@ int main(){
     printf("emp2 should be alive: %s %d\n", emp2->name, emp2->salary);
     free(emp1);
     free(emp2);
-    vector_destroy(empvec);
 
     printf("\n##########  size of vector struct ###################\n");
     printf("size of int on this machine, is : %zu bytes\n", sizeof(int));
