@@ -1,4 +1,4 @@
-#ifndef  _STACK_H
+#ifndef __STACK_H
 #define __STACK_H
 
 #include <stdbool.h> // for bool
@@ -20,15 +20,20 @@ typedef struct stackBuffer_t *StackBuffer;
 struct stack_t{
     StackBuffer sbuf;
     StackContentsOperations ops;
-    size_t (*size)(struct stack_t *v);
-    bool (*empthy)(struct stack_t *);
-    void (*pop)(struct stack_t *);
-    void (*print)(struct stack_t *);
-    void (*push)(struct stack_t *, void *data);
-    void (*swap)(struct stack_t *, size_t i, size_t j);
+    // element access
     void *(*top)(struct stack_t *);
+    // capactiy
+    bool (*empthy)(struct stack_t *);
+    size_t (*size)(struct stack_t *v);
+    // modifiers
+    void (*push)(struct stack_t *, void *data);
+    void (*pop)(struct stack_t *);
+    void (*swap)(struct stack_t *, size_t i, size_t j);
+    // assignment
     void  (*assign)(struct stack_t *v, struct stack_t *w);
     bool  (*equal)(struct stack_t *v, struct stack_t *w);
+    // info: provided if StackContentsOperations.Print is not NULL
+    void (*print)(struct stack_t *);
 };
 
 typedef struct stack_t *stack;

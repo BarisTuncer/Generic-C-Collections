@@ -140,12 +140,6 @@ static void vector_popback(vector v){
     v->buffer->size--;
 }
 
-static void vector_popfront(vector v){
-    if(v->buffer->size == 0) return;
-    v->ops.Delete(v->front(v));   // clean the first spot
-    v->buffer->size--;
-}
-
 static void vector_erase(vector v, size_t ind, size_t len){
     check_range(v, ind);
     if(ind + len > v->buffer->size) vector_error(v, __func__, " ind + len > vector size");
@@ -158,6 +152,11 @@ static void vector_erase(vector v, size_t ind, size_t len){
     for(size_t i=0; i<len; i++) v->buffer->arr[v->buffer->size-1-i] = NULL;
     v->buffer->size -= len;
     return;
+}
+
+static void vector_popfront(vector v){
+    if(v->buffer->size == 0) return;
+    vector_erase(v, 0, 1);
 }
 
 static bool vector_equal(vector v, vector w){
