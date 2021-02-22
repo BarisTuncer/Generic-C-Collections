@@ -46,7 +46,37 @@ vector removeConsecutiveDuplicates(vector v, VectorContentsOperations vops){
     return w;
 }
 
-/* Exp: Employee functions */
+/* Exp: Vector of vectors */
+
+static int vectorVectorEqual(const void *x, const void *y){
+    vector v = (vector)x;
+    vector w = (vector)y;
+    return v->equal(v,w);
+}
+
+static void *vectorVectorCopy(const void *x){ 
+    vector v = (vector)x;
+    vector w = vector_create(v->ops);
+    w->assign(w,v);
+    return (void *)w;
+}
+
+static void vectorVectorFree(void *x) {
+    vector v = (vector)x;
+    vector_destroy(v);
+}
+
+// optional if printing needed, else set to NULL
+static void vectorVectorPrint(const void *x){ 
+    vector v = (vector)x;
+    v->print(v);
+}
+
+VectorContentsOperations VectorVectorOps = { vectorVectorEqual, vectorVectorCopy, vectorVectorFree, vectorVectorPrint, NULL};
+
+
+
+/* Exp: Vector of Employees */
 
 struct employee_t{ char *name; int salary; };
 typedef struct employee_t *employee;
@@ -88,36 +118,7 @@ static int vectorEmployeeCompare(const void *x, const void *y){
 VectorContentsOperations VectorEmployeeOps = { vectorEmployeeEqual, vectorEmployeeCopy, vectorEmployeeFree, vectorEmployeePrint, vectorEmployeeCompare};
 
 
-/* Exp: Vector of vectors */
-
-static int vectorVectorEqual(const void *x, const void *y){
-    vector v = (vector)x;
-    vector w = (vector)y;
-    return v->equal(v,w);
-}
-
-static void *vectorVectorCopy(const void *x){ 
-    vector v = (vector)x;
-    vector w = vector_create(v->ops);
-    w->assign(w,v);
-    return (void *)w;
-}
-
-static void vectorVectorFree(void *x) {
-    vector v = (vector)x;
-    vector_destroy(v);
-}
-
-// optional if printing needed, else set to NULL
-static void vectorVectorPrint(const void *x){ 
-    vector v = (vector)x;
-    v->print(v);
-}
-
-VectorContentsOperations VectorVectorOps = { vectorVectorEqual, vectorVectorCopy, vectorVectorFree, vectorVectorPrint, NULL};
-
-
-// also run with Valgrind 
+// also run with Valgrind to see thatt there is no memory leak
 int main(){
     // register clean to keep the track of created vectors and cleanup before the exit
     // so we don't need to remember to call vector_destroy
