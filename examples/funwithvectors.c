@@ -119,7 +119,10 @@ VectorContentsOperations VectorVectorOps = { vectorVectorEqual, vectorVectorCopy
 
 // also run with Valgrind 
 int main(){
-    atexit(clean);   // keep the track of created vectors and cleanup befor the exit
+    // register clean to keep the track of created vectors and cleanup before the exit
+    // so we don't need to remember to call vector_destroy
+    atexit(clean);   
+    // ATTENTION: we wrapped vector_create with Vector_create for cleanup, see its definition above
     vector v = Vector_create(VectorStringOps);
     vector v3 = Vector_create(VectorStringOps);
     printf("v = "); v->print(v);
@@ -312,6 +315,8 @@ int main(){
     printf("emp2 should be alive: %s %d\n", emp2->name, emp2->salary);
     free(emp1);
     free(emp2);
+
+    empvec->at(empvec, 11);
 
     printf("\n##########  size of vector struct ###################\n");
     printf("size of int on this machine, is : %zu bytes\n", sizeof(int));

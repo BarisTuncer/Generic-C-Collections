@@ -13,11 +13,9 @@ struct vectorBuffer_t{
 };
 
 static void vector_error(vector v, const char *funcname, char *msg){
-    if(v) v->print(v);
-    else printf("vector is NULL\n");
-    int errnum = errno;
-    fprintf(stderr, "Upps! in %s %s: %s\n", funcname,  msg, strerror( errnum ));
-    abort();
+    if(v->ops.Print) { fprintf(stderr, "Upps ! Error occured for for: v = "); v->print(v);}
+    fprintf(stderr, "Inside %s: %s\n", funcname,  msg);
+    exit(-1);
 }
 
 static void check_range(vector v, size_t ind){
@@ -63,7 +61,7 @@ static void vector_pushback(vector vec, void *value){
     if(vec->buffer->size == vec->buffer->capacity) { 
         // printf("reallocating\n");
         void **temp = (void **)malloc(sizeof(void *) * 2*vec->buffer->capacity);
-        if(!temp) abort();
+        if(!temp) vector_error(vec, __func__, "Failed to reallocate buffer");
         // clear new table
         for(size_t i=0; i<2*vec->buffer->capacity; i++) temp[i] = NULL;
         // move all elements of old table to new table
@@ -76,7 +74,6 @@ static void vector_pushback(vector vec, void *value){
 }
 
 static void *vector_at(vector v, size_t ind){
-    if(!v) return NULL;
     check_range(v, ind);
     return v->buffer->arr[ind];
 }
@@ -92,7 +89,6 @@ static void *vector_back(vector v){
 }
 
 static void vector_get(vector v, size_t ind, void **data){
-    if(!v) return;
     check_range(v, ind);
     if(*data) v->ops.Delete(*data);
     *data = v->ops.Copy(v->buffer->arr[ind]);
