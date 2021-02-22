@@ -70,6 +70,36 @@ static int vectorEmployeeCompare(const void *x, const void *y){
 
 VectorContentsOperations VectorEmployeeOps = { vectorEmployeeEqual, vectorEmployeeCopy, vectorEmployeeFree, vectorEmployeePrint, vectorEmployeeCompare};
 
+
+/* Exp: Vector of int vectors */
+
+static int vectorIntVectorEqual(const void *x, const void *y){
+    vector v = (vector)x;
+    vector w = (vector)y;
+    return v->equal(v,w);
+}
+
+static void *vectorIntVectorCopy(const void *x){ 
+    vector v = (vector)x;
+    vector w = vector_create(VectorIntOps);
+    w->assign(w,v);
+    return (void *)w;
+}
+
+static void vectorIntVectorFree(void *x) {
+    vector v = (vector)x;
+    vector_destroy(v);
+}
+
+// optional if printing needed, else set to NULL
+static void vectorIntVectorPrint(const void *x){ 
+    vector v = (vector)x;
+    v->print(v);
+}
+
+VectorContentsOperations VectorIntVectorOps = { vectorIntVectorEqual, vectorIntVectorCopy, vectorIntVectorFree, vectorIntVectorPrint, NULL};
+
+
 // also run with Valgrind 
 int main(){
     vector v = vector_create(VectorStringOps);
@@ -225,10 +255,20 @@ int main(){
     removeConsecutiveDuplicatesInPlace(w);
     printf("w = "); w2->print(w);
 
+    printf("Vector of int vectors!\n");
+    vector vv = vector_create(VectorIntVectorOps);
+    vv->push_back(vv,w);
+    vv->push_back(vv,w2);
+    printf("vv = "); vv->print(vv);
+    vector w3 = (vector)vv->at(vv,0);
+    i = 9999;
+    w3->push_back(w3,&i);
+    printf("vv = "); vv->print(vv);
+
     free(tempbuf);
     vector_destroy(w);
     vector_destroy(w2);
-
+    vector_destroy(vv);
     printf("\n##########   employee vectors ###################\n");
     employee emp1 = (employee)malloc(sizeof(struct employee_t));
     employee emp2 = (employee)malloc(sizeof(struct employee_t));
