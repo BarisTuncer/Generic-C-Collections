@@ -12,7 +12,7 @@ struct vectorBuffer_t{
     size_t size;
 };
 
-static void vector_error(vector v, const char *funcname, char *msg){
+void vector_error(vector v, const char *funcname, char *msg){
     if(v->ops.Print) { fprintf(stderr, "Upps ! Error occured for for: v = "); v->print(v);}
     fprintf(stderr, "Inside %s: %s\n", funcname,  msg);
     exit(-1);

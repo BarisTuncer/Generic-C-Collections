@@ -24,26 +24,8 @@ static void stack_pop(stack s){
 }
 
 static void stack_print(stack s){
-    printf("<<");
     vector v = s->sbuf->vec;
-    if(s->size(s) < 20){
-        for(size_t i = 0; i < v->size(v); i++) {
-            printf("[%ld]: ", i);
-            s->ops.Print(v->at(v,i));
-        }
-    }
-    else {  
-        for(int i = 0; i < 5; i++) {
-            printf("[%d]: ", i);
-            s->ops.Print(v->at(v,i));
-        }
-        printf(" ..skipping the middle.. ");
-        for(size_t i = v->size(v)-5; i < v->size(v); i++) {
-            printf("[%ld]: ", i);
-            s->ops.Print(v->at(v,i));
-        }      
-    }
-    printf(">>\n");
+    v->print(v);
 }
 
 static void stack_push(stack s, void *data){

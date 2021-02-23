@@ -6,10 +6,14 @@
 #include <cmocka.h>
 #include <stdio.h>
 #include <string.h>
+#include <sys/types.h>
+#include <signal.h>
 #include "vector.h"
 
+#define static
 #define UNUSED(x) (void)(x)
 #define STRESS_TEST_ITERATIONS (1000)
+
 
 /* Declare the variables your tests want to use. */
 
@@ -199,6 +203,27 @@ void test7(){
     free(sp);
 }
 
+void __wrap_exit(int status);
+void __wrap_exit(int status){
+    UNUSED(status);
+    printf("Raising SIGUSR1. ");
+    raise(SIGUSR1);
+}
+static jmp_buf env;
+static void sig_handler(int signo){
+if (signo == SIGUSR1){
+    printf("Received SIGUSR1\n");
+    assert_true(true);
+    longjmp(env, 1);  // longjmp() ``returns'' to the state of the program when setjmp() was called.
+    }
+}
+void test8(){
+    signal(SIGUSR1, sig_handler);
+    i = setjmp(env);      // This says to save the current state of the registers into env.
+    if (i != 0) return;    
+    v->set(v,1,&i);  // should raise an error
+}
+
 int main(void)
 {
   const struct CMUnitTest tests[] = {
@@ -209,6 +234,7 @@ int main(void)
     cmocka_unit_test_setup_teardown(test5, setup, teardown),
     cmocka_unit_test_setup_teardown(test6, setup, teardown),
     cmocka_unit_test_setup_teardown(test7, setup, teardown),
+    cmocka_unit_test_setup_teardown(test8, setup, teardown),
 };
 
   return cmocka_run_group_tests(tests, NULL, NULL);
