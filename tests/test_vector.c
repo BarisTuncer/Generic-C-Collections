@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <sys/types.h>
-#include <signal.h>
 #include <errno.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -58,7 +57,7 @@ int teardown (void **state){
  * assert_* versions generate fatal failures when they fail, and abort the current function. 
  */
 
-void test1(){
+void BasicTestFor_PusbackAndPopBack(){
     assert_non_null(v);
     i = 1;
     v->push_back(v, &i);
@@ -78,7 +77,7 @@ void test1(){
     assert_true(v->empty(v));
 }
 
-void test2(){
+void StressTestFor_IntPushBackAndPopBack(){
     // let's do some stress testing
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
         v->push_back(v, &i);
@@ -92,7 +91,7 @@ void test2(){
     assert_true(v->empty(v));
 }
 
-void test3(){
+void BasicTestFor_Erase(){
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
         v->push_back(v, &i);
     }
@@ -111,7 +110,7 @@ void test3(){
     assert_true(w->equal(w, v));
 }
 
-void test4(){
+void BasicTestFor_IntSort(){
     int a = 5;
     int b = 843;
     int c = 12;
@@ -139,7 +138,7 @@ void test4(){
     free(temp);
 }
 
-void test5(){
+void BasicTestFor_BackFront(){
     assert_non_null(sv);
     char *sp;
     sp = "Keep";
@@ -310,7 +309,7 @@ void TestFor_FindAndSort(){
     assert_string_equal((char *)sv->at(sv, 0), "free");
 }
 
-void test7(){
+void BasicTestFor_Get(){
     char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
         sv->push_back(sv, str[i%7]);
@@ -403,13 +402,13 @@ void ExpectErrorTest(){
 int main(void)
 {
   const struct CMUnitTest tests[] = {
-    cmocka_unit_test_setup_teardown(test1, setup, teardown),
-    cmocka_unit_test_setup_teardown(test2, setup, teardown),
-    cmocka_unit_test_setup_teardown(test3, setup, teardown),
-    cmocka_unit_test_setup_teardown(test4, setup, teardown),
-    cmocka_unit_test_setup_teardown(test5, setup, teardown),
+    cmocka_unit_test_setup_teardown(BasicTestFor_PusbackAndPopBack, setup, teardown),
+    cmocka_unit_test_setup_teardown(StressTestFor_IntPushBackAndPopBack, setup, teardown),
+    cmocka_unit_test_setup_teardown(BasicTestFor_Erase, setup, teardown),
+    cmocka_unit_test_setup_teardown(BasicTestFor_IntSort, setup, teardown),
+    cmocka_unit_test_setup_teardown(BasicTestFor_BackFront, setup, teardown),
     cmocka_unit_test_setup_teardown(StressTestFor_PushBackPopBack, setup, teardown),
-    cmocka_unit_test_setup_teardown(test7, setup, teardown),
+    cmocka_unit_test_setup_teardown(BasicTestFor_Get, setup, teardown),
     cmocka_unit_test_setup_teardown(ExpectErrorTest, setup, teardown),
     cmocka_unit_test_setup_teardown(StressTestFor_PushFrontPopFront, setup, teardown),
     cmocka_unit_test_setup_teardown(TestFor_SwapEqual, setup, teardown),
