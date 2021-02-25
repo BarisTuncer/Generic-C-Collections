@@ -24,26 +24,13 @@ static void queue_pop(queue s){
 }
 
 static void queue_print(queue s){
-    printf("<<");
     vector v = s->sbuf->vec;
-    if(s->size(s) < 20){
-        for(size_t i = 0; i < v->size(v); i++) {
-            printf("[%ld]: ", i);
-            s->ops.Print(v->at(v,i));
-        }
-    }
-    else {  
-        for(int i = 0; i < 5; i++) {
-            printf("[%d]: ", i);
-            s->ops.Print(v->at(v,i));
-        }
-        printf(" ..skipping the middle.. ");
-        for(size_t i = v->size(v)-5; i < v->size(v); i++) {
-            printf("[%ld]: ", i);
-            s->ops.Print(v->at(v,i));
-        }      
-    }
-    printf(">>\n");
+    v->print(v);
+}
+
+static void queue_fprint(queue s, FILE *fp){
+    vector v = s->sbuf->vec;
+    v->fprint(v, fp);
 }
 
 static void queue_push(queue s, void *data){
@@ -96,6 +83,7 @@ queue queue_create(QueueContentsOperations Ops) {
     stk->push = queue_push;
     stk->swap = queue_swap;
     stk->print = queue_print;
+    stk->fprint = queue_fprint;
     stk->assign = queue_assign;
     stk->equal = queue_equal;
     stk->size = queue_size;

@@ -38,6 +38,7 @@ struct vector_t {
     void (*pop_front)(struct vector_t *v);
     void (*pop_back)(struct vector_t *v);
     void (*print)(struct vector_t *v);
+    void (*fprint)(struct vector_t *v, FILE *fp);
     void *(*at)(struct vector_t *v, size_t ind);
     void (*get)(struct vector_t *v, size_t ind, void **data);
     void *(*front)(struct vector_t *v);

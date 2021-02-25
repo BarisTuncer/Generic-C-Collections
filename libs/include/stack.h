@@ -36,6 +36,7 @@ struct stack_t{
     bool  (*equal)(struct stack_t *v, struct stack_t *w);
     // info: provided if StackContentsOperations.Print is not NULL
     void (*print)(struct stack_t *);
+    void (*fprint)(struct stack_t *, FILE *fp);
 };
 
 typedef struct stack_t *stack;

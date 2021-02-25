@@ -4,7 +4,13 @@
 #include <errno.h>
 #include "vector.h"
 
+#ifdef TESTING
+#define static
+#endif
+
 #define VECTOR_MIN_CAP (2)
+
+static char msgbuf[100];
 
 struct vectorBuffer_t{
     void **arr;
@@ -12,16 +18,17 @@ struct vectorBuffer_t{
     size_t size;
 };
 
-void vector_error(vector v, const char *funcname, char *msg){
+static void vector_error(vector v, const char *funcname, char *msg){
     if(v->ops.Print) { fprintf(stderr, "Upps ! Error occured for for: v = "); v->print(v);}
     fprintf(stderr, "Inside %s: %s\n", funcname,  msg);
     exit(-1);
 }
 
-static void check_range(vector v, size_t ind){
+static void check_range(vector v, char *funcname, size_t ind){
     if(ind>=v->buffer->size){
         errno = EFAULT;
-        vector_error(v, __func__, "index out of bound");
+        sprintf(msgbuf, "%s%ld%s", "index ",ind, " is out of bound");
+        vector_error(v, funcname, msgbuf);
     }
     return;
 }
@@ -57,6 +64,29 @@ static void vector_print(vector v){
     printf(">>\n");
 }
 
+static void vector_fprint(vector v, FILE *fp){
+    if(!v->ops.Print) return;
+    fprintf(fp, "%s", "<<");
+    if(v->buffer->size < 20){
+        for(size_t i = 0; i < v->buffer->size; i++) {
+            fprintf(fp, "[%ld]: ", i);
+            v->ops.Print(v->buffer->arr[i]);
+        }
+    }
+    else {  
+        for(int i = 0; i < 5; i++) {
+            fprintf(fp, "[%d]: ", i);
+            v->ops.Print(v->buffer->arr[i]);            
+        }
+        printf(" ..skipping the middle.. ");
+        for(size_t i = v->buffer->size-5; i < v->buffer->size; i++) {
+            fprintf(fp, "[%ld]: ", i);
+            v->ops.Print(v->buffer->arr[i]);            
+        }       
+    }
+    fprintf(fp, "%s", ">>\n");
+}
+
 static void vector_pushback(vector vec, void *value){
     if(vec->buffer->size == vec->buffer->capacity) { 
         // printf("reallocating\n");
@@ -74,7 +104,7 @@ static void vector_pushback(vector vec, void *value){
 }
 
 static void *vector_at(vector v, size_t ind){
-    check_range(v, ind);
+    check_range(v, __func__, ind);
     return v->buffer->arr[ind];
 }
 
@@ -89,13 +119,13 @@ static void *vector_back(vector v){
 }
 
 static void vector_get(vector v, size_t ind, void **data){
-    check_range(v, ind);
+    check_range(v, __func__, ind);
     if(*data) v->ops.Delete(*data);
     *data = v->ops.Copy(v->buffer->arr[ind]);
 }
 
 static void vector_set(vector v, size_t ind, void *value){
-    check_range(v, ind);
+    check_range(v, __func__, ind);
     v->ops.Delete(v->buffer->arr[ind]); 
     v->buffer->arr[ind] = v->ops.Copy(value);
 }
@@ -107,8 +137,8 @@ static void vector_clear(vector v){
 }
 
 static void vector_swap(vector v, size_t i, size_t j){
-    check_range(v, i);
-    check_range(v, j);
+    check_range(v, __func__, i);
+    check_range(v, __func__, j);
     if (v->ops.Equal(v->buffer->arr[i], v->buffer->arr[j])) return;
     void *temp = v->buffer->arr[i];
     v->buffer->arr[i] = v->buffer->arr[j];
@@ -120,7 +150,7 @@ static bool vector_empty(vector v){
 }
 
 static void vector_insert(vector v, size_t ind, void *data){
-    check_range(v, ind); 
+    check_range(v, __func__, ind); 
     vector_pushback(v, data); // we need one more spot, this may require re-sizing!
     v->ops.Delete(v->back(v));   // clean the last spot
     for(size_t i=v->buffer->size-1;  i>ind;  i--){
@@ -137,7 +167,7 @@ static void vector_popback(vector v){
 }
 
 static void vector_erase(vector v, size_t ind, size_t len){
-    check_range(v, ind);
+    check_range(v, __func__, ind);
     if(ind + len > v->buffer->size) vector_error(v, __func__, " ind + len > vector size");
     for(size_t i=ind;  i<ind + len;  i++){
         v->ops.Delete(v->buffer->arr[i]);
@@ -192,6 +222,7 @@ static void vector_sort(vector v){
 }
 
 static void vector_pushfront(vector v, void *data){
+    if(v->buffer->size == 0) { vector_pushback(v, data); return;}
     vector_insert(v, 0, data);
 }
 
@@ -204,7 +235,7 @@ static void *vectorIntCopy(const void *x) {
 }
 static void vectorIntDelete(void *x) { free((int *)x); }
 static void vectorIntPrint(const void *x){ printf("%d ", *(int *)x);}
-static int vectorIntCompare(const void *x, const void *y){return(*(const int **)x - *(const int **)y);}
+static int vectorIntCompare(const void *x, const void *y){return(*(int **)x - *(int **)y);}
 
 VectorContentsOperations VectorIntOps = {.Equal=vectorIntEqual, .Copy=vectorIntCopy, 
 .Delete=vectorIntDelete, .Print=vectorIntPrint, .Compare=vectorIntCompare };
@@ -256,6 +287,7 @@ vector vector_create(VectorContentsOperations Ops) {
     vec->size = vector_size;
     vec->capacity = vector_capacity;
     vec->sort = vector_sort;
+    vec->fprint = vector_fprint;
     return vec;
 }
 

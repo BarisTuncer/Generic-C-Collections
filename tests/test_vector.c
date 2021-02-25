@@ -8,6 +8,9 @@
 #include <string.h>
 #include <sys/types.h>
 #include <signal.h>
+#include <errno.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #include "vector.h"
 
 #define static
@@ -22,6 +25,25 @@ static vector w;
 static vector sv;
 static vector sw;
 static int i;
+static volatile int sr;
+
+void __wrap_exit(int status);
+static sigjmp_buf env;
+static void Signal(int signum, void *sighandler){
+    struct sigaction newhandler;                        /* new settings        */
+    newhandler.sa_handler = sighandler;                 /* handler function    */
+	newhandler.sa_flags = SA_RESETHAND;    /* options    */
+	if(sigaction(signum, &newhandler, NULL) == -1 )
+		printf("Oh dear, something went wrong with sigaction! %s\n", strerror(errno));
+}
+
+static void sigusr1_handler(int signo){
+    printf("Received SIGCHLD: %d\n", signo);
+    assert_true(true);
+    siglongjmp(env, 1);  // longjmp() ``returns'' to the state of the program when setjmp() was called.
+    // so it will set the return of setjmp (which is i) to 1 --> which will cause return
+}
+
 /** These functions will be used to initialize
    and clean resources up after each test run 
 */
@@ -107,8 +129,8 @@ void test3(){
 
 void test4(){
     int a = 5;
-    int b = 12;
-    int c = 848;
+    int b = 843;
+    int c = 12;
 
     v->push_back(v, &a);
     v->push_back(v, &b);
@@ -126,6 +148,10 @@ void test4(){
     assert_int_equal(a, *(int *)v->at(v,0));
     assert_int_equal(b, *(int *)v->at(v,1));
     assert_int_equal(c, *(int *)v->at(v,2));
+
+    v->sort(v);
+    v->print(v);
+    //assert_int_equal(*(int *)v->at(v,2), b);
     free(temp);
 }
 
@@ -163,20 +189,141 @@ void test5(){
     assert_true(sv->empty(sv));
 }
 
-void test6(){
+void StressTestFor_PushBackPopBack(){
     // let's do some stress testing
     char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
+        assert_int_equal(sv->size(sv), i);
         sv->push_back(sv, str[i % 7]);
+        assert_int_equal(sv->size(sv), i+1);
+        assert_string_equal((char *)sv->at(sv, i), str[i % 7]);
     }
     int j;
-    // sv->print(sv);
+    sv->fprint(sv, stdout);
+    assert_int_equal(sv->size(sv), STRESS_TEST_ITERATIONS);
+    printf("capacity is now: %zu\n", sv->capacity(sv));
     for(j = STRESS_TEST_ITERATIONS - 1; j >= 0; j--) {
         assert_false(sv->empty(sv));
+        assert_int_equal(sv->size(sv), j+1);
         assert_string_equal((char *)sv->back(sv), str[j % 7]);
+        assert_string_equal((char *)sv->at(sv, j), str[j % 7]);
         sv->pop_back(sv);
+        assert_int_equal(sv->size(sv), j);
     }      
     assert_true(sv->empty(sv));
+}
+
+void StressTestFor_PushFrontPopFront(){
+    // let's do some stress testing
+    char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
+    for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
+        assert_int_equal(sv->size(sv), i);
+        sv->push_front(sv, str[i % 7]);
+        assert_int_equal(sv->size(sv), i+1);
+    }
+    sv->print(sv);
+    int j;
+    for(j = STRESS_TEST_ITERATIONS - 1; j >= 0; j--) {
+        assert_false(sv->empty(sv));
+        assert_int_equal(sv->size(sv), j+1);
+        assert_string_equal((char *)sv->front(sv), str[j % 7]);
+        sv->pop_front(sv);
+        assert_int_equal(sv->size(sv), j);
+    }      
+    assert_true(sv->empty(sv));
+}
+
+void TestFor_SwapEqual(){
+    // let's do some stress testing
+    char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
+    for(i = 0; i < 7; i++) {
+        sv->push_back(sv, str[i % 7]);
+        assert_int_equal(sv->size(sv), i+1);
+    }
+    printf("sv = ");sv->fprint(sv, stdout);
+    //sv->assign(sv,sw);
+    //sv->clear(sv);
+    for(i = 0; i < 7; i++) {
+        sw->push_front(sw, str[i % 7]);
+        assert_int_equal(sw->size(sw), i+1);
+    }
+    printf("sw = "); sw->fprint(sw, stdout);
+    assert_false(sv->equal(sv, sw));
+    assert_false(sw->equal(sw, sv));
+    size_t k = 0;
+    size_t j = sw->size(sw) - 1;
+    while (k < j){
+        sw->swap(sw, k, j);
+        k ++;
+        j --;
+    }
+    printf("%s\n", "After Swap");
+    printf("sv = ");sv->fprint(sv, stdout);
+    printf("sw = "); sw->fprint(sw, stdout);
+    assert_true(sv->equal(sv, sw));
+    assert_true(sw->equal(sw, sv));    
+}
+
+void TestFor_AssignSetClear(){
+    // let's do some stress testing
+    char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
+    for(i = 0; i < 7; i++) {
+        sv->push_back(sv, str[i % 7]);
+        assert_int_equal(sv->size(sv), i+1);
+    }
+    printf("sw = "); sw->fprint(sw, stdout);
+    sw->assign(sw,sv);
+    printf("sw = "); sw->fprint(sw, stdout);
+    assert_true(sw->equal(sw, sv));
+    assert_true(sv->equal(sv, sw));
+    sw->clear(sw);
+    assert_false(sw->equal(sw, sv));
+    assert_false(sv->equal(sv, sw));
+    printf("after clear, sw = "); sw->fprint(sw, stdout);      
+    for(i = 0; i < 7; i++) {
+        sw->push_back(sw, str[i % 7]);
+        assert_int_equal(sw->size(sw), i+1);
+    }
+    printf("after push back, sw = "); sw->fprint(sw, stdout);
+    assert_true(sv->equal(sv, sw));
+    for(i = 0; i < 7; i++) {
+        sw->set(sw, i, str[(6-i) % 7]);
+    }
+    printf("after set, sw = "); sw->fprint(sw, stdout);
+    assert_false(sw->equal(sw, sv));
+    for(i = 0; i < 7; i++) {
+        sw->set(sw, i, str[i % 7]);
+    }
+    printf("after set again, sw = "); sw->fprint(sw, stdout);
+    assert_true(sw->equal(sw, sv));
+    assert_true(sv->equal(sv, sw));
+    sw->push_back(sw, str[0]);
+    sw->push_back(sw, str[3]);
+
+    printf("after push back, sw = "); sw->fprint(sw, stdout);
+    sw->assign(sw, sv);
+    printf("after assign, sw = "); sw->fprint(sw, stdout);
+    assert_true(sw->equal(sw, sv));
+    assert_true(sv->equal(sv, sw));   
+}
+
+void TestFor_FindAndSort(){
+    // let's do some stress testing
+    char *str[7] = {"keep", "on", "rock", "in", "the", "free", "world!"};
+    for(i = 0; i < 7; i++) {
+        sv->push_back(sv, str[i % 7]);
+        assert_int_equal(sv->size(sv), i+1);
+    }
+    printf("sv = "); sv->print(sv);
+    char *temp = "rock"; 
+    int r = sv->find(sv, temp);
+    assert_int_equal(r, 2);
+    temp = "noentry";
+    r = sv->find(sv, temp);
+    assert_int_equal(r, -1);
+    sv->sort(sv);
+    printf("after sort, sv = "); sv->print(sv);
+    assert_string_equal((char *)sv->at(sv, 0), "free");
 }
 
 void test7(){
@@ -203,26 +350,71 @@ void test7(){
     free(sp);
 }
 
-void __wrap_exit(int status);
-void __wrap_exit(int status){
-    UNUSED(status);
-    printf("Raising SIGUSR1. ");
-    raise(SIGUSR1);
-}
-static jmp_buf env;
-static void sig_handler(int signo){
-if (signo == SIGUSR1){
-    printf("Received SIGUSR1\n");
-    assert_true(true);
-    longjmp(env, 1);  // longjmp() ``returns'' to the state of the program when setjmp() was called.
+void ExpectErrorTest(){
+    for(i=0; i<5; i++) v->push_back(v, &i);
+    assert_int_equal(v->size(v), 5);
+    printf("********** Expecting Error logs ***********\n");
+    int k = 99;
+    int wstatus;
+    pid_t pid = fork();
+    if(!pid){
+        v->set(v,6,&k); // should raise an error 
     }
+    pid_t r = wait(&wstatus);
+    assert_int_equal(r, pid);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->erase(v,2,5); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->erase(v,5,1); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->at(v,5); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->get(v, 8, (void *)&k); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->set(v, 5, &k); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->swap(v, 1, 5); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
+    pid = fork();
+    if(!pid){
+        v->insert(v, 5, &k); // should raise an error 
+    }
+    r = wait(&wstatus);
+    assert_true(WIFEXITED(wstatus));
+    assert_int_equal(WEXITSTATUS(wstatus), 255);
 }
-void test8(){
-    signal(SIGUSR1, sig_handler);
-    i = setjmp(env);      // This says to save the current state of the registers into env.
-    if (i != 0) return;    
-    v->set(v,1,&i);  // should raise an error
-}
+
 
 int main(void)
 {
@@ -232,9 +424,13 @@ int main(void)
     cmocka_unit_test_setup_teardown(test3, setup, teardown),
     cmocka_unit_test_setup_teardown(test4, setup, teardown),
     cmocka_unit_test_setup_teardown(test5, setup, teardown),
-    cmocka_unit_test_setup_teardown(test6, setup, teardown),
+    cmocka_unit_test_setup_teardown(StressTestFor_PushBackPopBack, setup, teardown),
     cmocka_unit_test_setup_teardown(test7, setup, teardown),
-    cmocka_unit_test_setup_teardown(test8, setup, teardown),
+    cmocka_unit_test_setup_teardown(ExpectErrorTest, setup, teardown),
+    cmocka_unit_test_setup_teardown(StressTestFor_PushFrontPopFront, setup, teardown),
+    cmocka_unit_test_setup_teardown(TestFor_SwapEqual, setup, teardown),
+    cmocka_unit_test_setup_teardown(TestFor_AssignSetClear, setup, teardown),
+    cmocka_unit_test_setup_teardown(TestFor_FindAndSort, setup, teardown),
 };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

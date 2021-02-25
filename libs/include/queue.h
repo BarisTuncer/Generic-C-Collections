@@ -37,6 +37,7 @@ struct queue_t{
     bool  (*equal)(struct queue_t *v, struct queue_t *w);
     // info: provided if QueueContentsOperations.Print is not NULL
     void (*print)(struct queue_t *);
+    void (*fprint)(struct queue_t *);
 };
 
 typedef struct queue_t *queue;

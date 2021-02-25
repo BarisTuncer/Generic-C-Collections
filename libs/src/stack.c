@@ -28,6 +28,11 @@ static void stack_print(stack s){
     v->print(v);
 }
 
+static void stack_fprint(stack s, FILE *fp){
+    vector v = s->sbuf->vec;
+    v->fprint(v, fp);
+}
+
 static void stack_push(stack s, void *data){
     vector vec = s->sbuf->vec;
     vec->push_back(vec, data);
@@ -73,6 +78,7 @@ stack stack_create(StackContentsOperations Ops) {
     stk->swap = stack_swap;
     stk->top = stack_top;
     stk->print = stack_print;
+    stk->print = stack_fprint;
     stk->assign = stack_assign;
     stk->equal = stack_equal;
     stk->size = stack_size;
