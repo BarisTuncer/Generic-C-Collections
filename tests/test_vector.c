@@ -50,10 +50,6 @@ int teardown (void **state){
     vector_destroy(w);
     vector_destroy(sv);
     vector_destroy(sw);
-    assert_null(v);
-    assert_null(w);
-    assert_null(sv);
-    assert_null(sw);
     return 0;
 }
 
@@ -139,7 +135,7 @@ void test4(){
 
     v->sort(v);
     v->print(v);
-    //assert_int_equal(*(int *)v->at(v,2), b);
+    assert_int_equal(*(int *)v->at(v,2), b);
     free(temp);
 }
 

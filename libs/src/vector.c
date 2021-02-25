@@ -235,7 +235,11 @@ static void *vectorIntCopy(const void *x) {
 }
 static void vectorIntDelete(void *x) { free((int *)x); }
 static void vectorIntPrint(const void *x){ printf("%d ", *(int *)x);}
-static int vectorIntCompare(const void *x, const void *y){return ( *(int**)x - *(int**)y );}
+static int vectorIntCompare(const void *x, const void *y){ 
+    int *xv = *(int **)x;
+    int *yv = *(int **)y;
+    return (*xv - *yv);
+}
 
 VectorContentsOperations VectorIntOps = {.Equal=vectorIntEqual, .Copy=vectorIntCopy, 
 .Delete=vectorIntDelete, .Print=vectorIntPrint, .Compare=vectorIntCompare };
