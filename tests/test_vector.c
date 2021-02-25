@@ -25,24 +25,6 @@ static vector w;
 static vector sv;
 static vector sw;
 static int i;
-static volatile int sr;
-
-void __wrap_exit(int status);
-static sigjmp_buf env;
-static void Signal(int signum, void *sighandler){
-    struct sigaction newhandler;                        /* new settings        */
-    newhandler.sa_handler = sighandler;                 /* handler function    */
-	newhandler.sa_flags = SA_RESETHAND;    /* options    */
-	if(sigaction(signum, &newhandler, NULL) == -1 )
-		printf("Oh dear, something went wrong with sigaction! %s\n", strerror(errno));
-}
-
-static void sigusr1_handler(int signo){
-    printf("Received SIGCHLD: %d\n", signo);
-    assert_true(true);
-    siglongjmp(env, 1);  // longjmp() ``returns'' to the state of the program when setjmp() was called.
-    // so it will set the return of setjmp (which is i) to 1 --> which will cause return
-}
 
 /** These functions will be used to initialize
    and clean resources up after each test run 
@@ -57,6 +39,8 @@ int setup (void **state){
     i = 0;
     assert_non_null(v);
     assert_non_null(w);
+    assert_non_null(sv);
+    assert_non_null(sw);
     return 0;
 }
 
@@ -66,6 +50,10 @@ int teardown (void **state){
     vector_destroy(w);
     vector_destroy(sv);
     vector_destroy(sw);
+    assert_null(v);
+    assert_null(w);
+    assert_null(sv);
+    assert_null(sw);
     return 0;
 }
 
