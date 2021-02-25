@@ -15,7 +15,7 @@
 
 #define static
 #define UNUSED(x) (void)(x)
-#define STRESS_TEST_ITERATIONS (1000)
+#define STRESS_TEST_ITERATIONS (10000)
 
 
 /* Declare the variables your tests want to use. */
@@ -221,15 +221,12 @@ void StressTestFor_PushFrontPopFront(){
 }
 
 void TestFor_SwapEqual(){
-    // let's do some stress testing
     char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
     for(i = 0; i < 7; i++) {
         sv->push_back(sv, str[i % 7]);
         assert_int_equal(sv->size(sv), i+1);
     }
     printf("sv = ");sv->fprint(sv, stdout);
-    //sv->assign(sv,sw);
-    //sv->clear(sv);
     for(i = 0; i < 7; i++) {
         sw->push_front(sw, str[i % 7]);
         assert_int_equal(sw->size(sw), i+1);
@@ -252,7 +249,6 @@ void TestFor_SwapEqual(){
 }
 
 void TestFor_AssignSetClear(){
-    // let's do some stress testing
     char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
     for(i = 0; i < 7; i++) {
         sv->push_back(sv, str[i % 7]);
@@ -295,7 +291,6 @@ void TestFor_AssignSetClear(){
 }
 
 void TestFor_FindAndSort(){
-    // let's do some stress testing
     char *str[7] = {"keep", "on", "rock", "in", "the", "free", "world!"};
     for(i = 0; i < 7; i++) {
         sv->push_back(sv, str[i % 7]);
