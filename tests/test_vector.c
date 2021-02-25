@@ -10,6 +10,7 @@
 #include <errno.h>
 #include <sys/wait.h>
 #include <unistd.h>
+#include <math.h>
 #include "vector.h"
 
 #define static
@@ -172,7 +173,7 @@ void BasicTestFor_BackFront(){
     assert_true(sv->empty(sv));
 }
 
-void StressTestFor_PushBackPopBack(){
+void StressTestFor_PushBackPopBackCapacity(){
     // let's do some stress testing
     char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
@@ -184,7 +185,10 @@ void StressTestFor_PushBackPopBack(){
     int j;
     sv->fprint(sv, stdout);
     assert_int_equal(sv->size(sv), STRESS_TEST_ITERATIONS);
-    printf("capacity is now: %zu\n", sv->capacity(sv));
+    double val = log((double)sv->size(sv))/(double)log(2);
+    val = ceil(val);
+    val = pow(2, val);
+    assert_int_equal(sv->capacity(sv), (size_t)val);
     for(j = STRESS_TEST_ITERATIONS - 1; j >= 0; j--) {
         assert_false(sv->empty(sv));
         assert_int_equal(sv->size(sv), j+1);
@@ -407,7 +411,7 @@ int main(void)
     cmocka_unit_test_setup_teardown(BasicTestFor_Erase, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_IntSort, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_BackFront, setup, teardown),
-    cmocka_unit_test_setup_teardown(StressTestFor_PushBackPopBack, setup, teardown),
+    cmocka_unit_test_setup_teardown(StressTestFor_PushBackPopBackCapacity, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_Get, setup, teardown),
     cmocka_unit_test_setup_teardown(ExpectErrorTest, setup, teardown),
     cmocka_unit_test_setup_teardown(StressTestFor_PushFrontPopFront, setup, teardown),
