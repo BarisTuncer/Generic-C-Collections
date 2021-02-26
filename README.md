@@ -1,10 +1,11 @@
 # CPP like Generic C Collections
 
+[funwithvectors.c]: tests/CMakeLists.txt
 CPP like Generic C collections library for educational purposes.
 
-Please, check examples (especially examples/funwithvectors.c) folder to see how to use the libraries.
+Please, see **[funwithvectors.c]** to see how to use the libraries.
 
-Note the wrapping of `vector_create` and usage of `atexit` to delegate the responsibility of freeing memory to clean function.
+Note the wrapping of `vector_create` and usage of `atexit` to delegate the responsibility of freeing memory to `clean` function.
 This way user need not worry to call `vector_destroy` for each vector created.
 
 [cmocka]: https://api.cmocka.org/
@@ -13,35 +14,6 @@ This way user need not worry to call `vector_destroy` for each vector created.
 [calculator_test]: https://git.cryptomilk.org/projects/cmocka.git/tree/example/calculator_test.c
 
 For compiling our code we will be using CMake and for testing we will be using **[cmocka]** which is an elegant unit testing framework for `C` with support for mock objects. It only requires the standard `C` library, unit testing `C` library with mock support.
-
-## How to install CMake
-Remove old version of cmake:
-
-`sudo apt purge --auto-remove cmake`
-
-Obtain a copy of the signing key:
-
-`wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null`
-
-Add the repository to your sources list:
-
-a. For Ubuntu Focal Fossa (20.04)
-
-`sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ focal main'`     
-
-b. For Ubuntu Bionic Beaver (18.04)
-
-`sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ bionic main'`
-
-c. For Ubuntu Xenial Xerus (16.04)
-
-`sudo apt-add-repository 'deb https://apt.kitware.com/ubuntu/ xenial main'`
-
-Update and install
-
-`sudo apt update`
-`sudo apt install cmake`
-
 
 ## How to install CMocka
 1. wget http://git.cryptomilk.org/projects/cmocka.git/snapshot/master.tar.gz
