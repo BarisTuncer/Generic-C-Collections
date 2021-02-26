@@ -1,10 +1,11 @@
-# Generic-C-Collections
+# CPP like Generic C Collections
 
 CPP like Generic C collections library for educational purposes.
 
 Please, check examples (especially examples/funwithvectors.c) folder to see how to use the libraries.
-Note the wrapping of vector_create and usage of atexit to delegate the responsibility of freeing memory to clean function.
-This way user need not worry to call vector_destroy for each vector created.
+
+Note the wrapping of `vector_create` and usage of `atexit` to delegate the responsibility of freeing memory to clean function.
+This way user need not worry to call `vector_destroy` for each vector created.
 
 [cmocka]: https://api.cmocka.org/
 [CMakeLists]: tests/CMakeLists.txt
