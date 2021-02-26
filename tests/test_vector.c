@@ -11,12 +11,18 @@
 #include <sys/wait.h>
 #include <unistd.h>
 #include <math.h>
+#include "log.h"
 #include "vector.h"
 
 #define static
 #define UNUSED(x) (void)(x)
-#define STRESS_TEST_ITERATIONS (10000)
+#define STRESS_TEST_ITERATIONS (100000)
 
+static void set_header(FILE *fp, const char *testname){
+    fprintf(fp, "\n%s\n", "#######################################");
+    fprintf(fp, "\t%s\n", testname);
+    fprintf(fp, "%s\n\n", "#######################################");    
+}
 
 /* Declare the variables your tests want to use. */
 
@@ -25,7 +31,8 @@ static vector w;
 static vector sv;
 static vector sw;
 static int i;
-
+static FILE *fp;
+static char logbuf[BUFSIZ];
 /** These functions will be used to initialize
    and clean resources up after each test run 
 */
@@ -59,59 +66,94 @@ int teardown (void **state){
  */
 
 void BasicTestFor_PusbackAndPopBack(){
+    set_header(fp, __func__);
     assert_non_null(v);
     i = 1;
+    log_info("pushing i = %d", i);
     v->push_back(v, &i);
     i = 2;
+    log_info("pushing i = %d", i);
     v->push_back(v, &i);
     i = 3;
+    log_info("pushing i = %d", i);
     v->push_back(v, &i);
+    v->fprint(v, fp);
+
     assert_false(v->empty(v));
     assert_int_equal(*(int *)v->back(v), 3);
+    log_info("pop back");
     v->pop_back(v);
+    v->fprint(v, fp);
     assert_false(v->empty(v));
     assert_int_equal(*(int *)v->back(v), 2);
+    log_info("pop back");
     v->pop_back(v);
+    v->fprint(v, fp);
     assert_false(v->empty(v));    
     assert_int_equal(*(int *)v->back(v), 1);
+    log_info("pop back");
     v->pop_back(v);
+    v->fprint(v, fp);
     assert_true(v->empty(v));
 }
 
 void StressTestFor_IntPushBackAndPopBack(){
     // let's do some stress testing
+    set_header(fp , __func__);
+    log_info("starting push backs");
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
         v->push_back(v, &i);
     }
+    log_info("push back ends");
+    v->fprint(v, fp);
     int j;
+    log_info("starting pop backs");
     for(j = STRESS_TEST_ITERATIONS - 1; j >= 0; j--) {
         assert_false(v->empty(v));
         assert_int_equal(*(int *)v->back(v), j);
         v->pop_back(v);
-    }      
+    }
+    log_info("pop back ends");
+    v->fprint(v, fp);
     assert_true(v->empty(v));
 }
 
 void BasicTestFor_Erase(){
-    for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
+    set_header(fp , __func__);
+    log_info("starting push backs for v");
+    for(i = 0; i < 10; i++) {
         v->push_back(v, &i);
     }
-    for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
+    log_info("starting push backs for w");
+    for(i = 0; i < 10; i++) {
         w->push_back(w, &i);
     }
+    log_info("push backs ends");
+    v->fprint(v, fp);
+    w->fprint(w, fp);
     assert_true(v->equal(v, w));
     assert_true(w->equal(w, v));
     int temp = *(int *)w->back(w);
+    log_info("Pop back from w");
     w->pop_back(w);
+    w->fprint(w, fp);
     assert_false(w->equal(w, v));
+    log_info("Push back w");
     w->push_back(w, &temp);
+    w->fprint(w, fp);
     assert_true(w->equal(w, v));
+    log_info("erasing last element from w");
     w->erase(w, w->size(w)-1, 1);
+    w->fprint(w, fp);
+    log_info("Push back w");
     w->push_back(w, &temp);
+    v->fprint(v, fp);
+    w->fprint(w, fp);
     assert_true(w->equal(w, v));
 }
 
 void BasicTestFor_IntSort(){
+    set_header(fp , __func__);
     int a = 5;
     int b = 843;
     int c = 12;
@@ -132,16 +174,20 @@ void BasicTestFor_IntSort(){
     assert_int_equal(a, *(int *)v->at(v,0));
     assert_int_equal(b, *(int *)v->at(v,1));
     assert_int_equal(c, *(int *)v->at(v,2));
-
+    log_info("before sorting");
+    v->fprint(v, fp);
     v->sort(v);
-    v->print(v);
+    log_info("after sorting");
+    v->fprint(v, fp);
     assert_int_equal(*(int *)v->at(v,2), b);
     free(temp);
 }
 
 void BasicTestFor_BackFront(){
+    set_header(fp , __func__);
     assert_non_null(sv);
     char *sp;
+    log_info("Starting push backs");
     sp = "Keep";
     sv->push_back(sv, sp); // Keep
     sp = "on";
@@ -149,46 +195,56 @@ void BasicTestFor_BackFront(){
     sp = "Rock!";
     sv->push_back(sv, sp); // Keep, on, Rock
     assert_false(sv->empty(sv));
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_string_equal((char *)sv->back(sv), "Rock!");
+    log_info("pop back");
     sv->pop_back(sv); // Keep, on
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_false(sv->empty(sv));
     assert_string_equal((char *)sv->back(sv), "on");
     sp = "Hey kids!";
+    log_info("push front");
     sv->push_front(sv, sp); // Hey kids! , Keep, on
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_string_equal((char *)sv->front(sv), "Hey kids!");
+    log_info("pop back");
     sv->pop_back(sv); // Hey kids! , Keep
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_false(sv->empty(sv));
     assert_string_equal((char *)sv->back(sv), "Keep");
+    log_info("pop back");   
     sv->pop_back(sv); // Hey kids!
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_false(sv->empty(sv));    
     assert_string_equal((char *)sv->front(sv), "Hey kids!");
     assert_string_equal((char *)sv->back(sv), "Hey kids!");
+    log_info("pop back");       
     sv->pop_back(sv); // nothing
-    //sv->print(sv);
+    sv->fprint(sv, fp);
     assert_true(sv->empty(sv));
 }
 
 void StressTestFor_PushBackPopBackCapacity(){
     // let's do some stress testing
-    char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};
+    set_header(fp , __func__);
+    char *str[7] = {"Keep", "on", "Rock", "in", "the", "free", "world!"};    
+    log_info("Stress test push_backs starts");
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
         assert_int_equal(sv->size(sv), i);
         sv->push_back(sv, str[i % 7]);
         assert_int_equal(sv->size(sv), i+1);
         assert_string_equal((char *)sv->at(sv, i), str[i % 7]);
     }
+    log_info("Stress test push_backs ends");
+    sv->fprint(sv, fp);
     int j;
-    sv->fprint(sv, stdout);
     assert_int_equal(sv->size(sv), STRESS_TEST_ITERATIONS);
     double val = log((double)sv->size(sv))/(double)log(2);
     val = ceil(val);
     val = pow(2, val);
+    log_info("Checking capacity");
     assert_int_equal(sv->capacity(sv), (size_t)val);
+    log_info("Stress test pop_backs starts");
     for(j = STRESS_TEST_ITERATIONS - 1; j >= 0; j--) {
         assert_false(sv->empty(sv));
         assert_int_equal(sv->size(sv), j+1);
@@ -196,7 +252,9 @@ void StressTestFor_PushBackPopBackCapacity(){
         assert_string_equal((char *)sv->at(sv, j), str[j % 7]);
         sv->pop_back(sv);
         assert_int_equal(sv->size(sv), j);
-    }      
+    }
+    log_info("Stress test pop_backs ends");
+    sv->fprint(sv, fp);
     assert_true(sv->empty(sv));
 }
 
@@ -333,11 +391,14 @@ void BasicTestFor_Get(){
 }
 
 void ExpectErrorTest(){
+    set_header(fp, __func__);
     for(i=0; i<5; i++) v->push_back(v, &i);
     assert_int_equal(v->size(v), 5);
-    printf("********** Expecting Error logs ***********\n");
+    log_info("This tests checks whether we get exectuion stops in case of an index out of bound");
+    log_warn("######### Expecting Error logs in stdout ###########");
     int k = 99;
     int wstatus;
+    log_info("Testing set error");
     pid_t pid = fork();
     if(!pid){
         v->set(v,6,&k); // should raise an error 
@@ -346,6 +407,7 @@ void ExpectErrorTest(){
     assert_int_equal(r, pid);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing erase error");
     pid = fork();
     if(!pid){
         v->erase(v,2,5); // should raise an error 
@@ -353,6 +415,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing erase error");
     pid = fork();
     if(!pid){
         v->erase(v,5,1); // should raise an error 
@@ -360,6 +423,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing at error");
     pid = fork();
     if(!pid){
         v->at(v,5); // should raise an error 
@@ -367,6 +431,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing get error");
     pid = fork();
     if(!pid){
         v->get(v, 8, (void *)&k); // should raise an error 
@@ -374,6 +439,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing set error");
     pid = fork();
     if(!pid){
         v->set(v, 5, &k); // should raise an error 
@@ -381,6 +447,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing swap error");
     pid = fork();
     if(!pid){
         v->swap(v, 1, 5); // should raise an error 
@@ -388,6 +455,7 @@ void ExpectErrorTest(){
     r = wait(&wstatus);
     assert_true(WIFEXITED(wstatus));
     assert_int_equal(WEXITSTATUS(wstatus), 255);
+    log_info("Testing insert error");
     pid = fork();
     if(!pid){
         v->insert(v, 5, &k); // should raise an error 
@@ -400,19 +468,27 @@ void ExpectErrorTest(){
 
 int main(void)
 {
-  const struct CMUnitTest tests[] = {
+    char filename[200];
+    sprintf(filename, "%s/", TEST_LOGS_DIR);
+    sprintf(filename+strlen(filename), "%s", "test_vector_logs.txt");
+    printf("filename = %s\n", filename);
+    fp = fopen(filename, "wb");
+    if(!fp) fprintf(stderr, "%s", "failed to create a log file\n");
+    int level = 0;
+    log_add_fp(fp, level);
+    const struct CMUnitTest tests[] = {
     cmocka_unit_test_setup_teardown(BasicTestFor_PusbackAndPopBack, setup, teardown),
     cmocka_unit_test_setup_teardown(StressTestFor_IntPushBackAndPopBack, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_Erase, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_IntSort, setup, teardown),
     cmocka_unit_test_setup_teardown(BasicTestFor_BackFront, setup, teardown),
     cmocka_unit_test_setup_teardown(StressTestFor_PushBackPopBackCapacity, setup, teardown),
-    cmocka_unit_test_setup_teardown(BasicTestFor_Get, setup, teardown),
+    //cmocka_unit_test_setup_teardown(BasicTestFor_Get, setup, teardown),
     cmocka_unit_test_setup_teardown(ExpectErrorTest, setup, teardown),
-    cmocka_unit_test_setup_teardown(StressTestFor_PushFrontPopFront, setup, teardown),
-    cmocka_unit_test_setup_teardown(TestFor_SwapEqual, setup, teardown),
-    cmocka_unit_test_setup_teardown(TestFor_AssignSetClear, setup, teardown),
-    cmocka_unit_test_setup_teardown(TestFor_FindAndSort, setup, teardown),
+    //cmocka_unit_test_setup_teardown(StressTestFor_PushFrontPopFront, setup, teardown),
+    //cmocka_unit_test_setup_teardown(TestFor_SwapEqual, setup, teardown),
+    //cmocka_unit_test_setup_teardown(TestFor_AssignSetClear, setup, teardown),
+    //cmocka_unit_test_setup_teardown(TestFor_FindAndSort, setup, teardown),
 };
 
   return cmocka_run_group_tests(tests, NULL, NULL);

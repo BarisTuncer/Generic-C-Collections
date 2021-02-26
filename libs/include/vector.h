@@ -13,15 +13,13 @@ typedef struct vectorContentsOperations {
     /* free a copy */
     void (*Delete)(void *datum);
     /* optional: print */
-    void (*Print)(const void *datum);
+    void (*Print)(const void *datum, FILE *fp);
     /* optional: for sorting */
     int (*Compare)(const void *datum1, const void *datum2);
 }VectorContentsOperations;
 
 /* Some predefined vectorContentsOperations structures */
 // make them available for clients
-
-
 extern VectorContentsOperations VectorIntOps;
 extern VectorContentsOperations VectorStringOps;
 

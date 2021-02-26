@@ -28,6 +28,7 @@ endif()
 
 if (${CMAKE_C_COMPILER_ID} MATCHES "(GNU|Clang)" AND NOT APPLE)
     add_subdirectory(libs)
+    add_subdirectory(extlibs)
     add_subdirectory(examples)
     add_subdirectory(tests)
 endif()

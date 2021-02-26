@@ -24,7 +24,7 @@ static void vector_error(vector v, const char *funcname, char *msg){
     exit(-1);
 }
 
-static void check_range(vector v, char *funcname, size_t ind){
+static void check_range(vector v, const char *funcname, size_t ind){
     if(ind>=v->buffer->size){
         errno = EFAULT;
         sprintf(msgbuf, "%s%ld%s", "index ",ind, " is out of bound");
@@ -47,18 +47,18 @@ static void vector_print(vector v){
     if(v->buffer->size < 20){
         for(size_t i = 0; i < v->buffer->size; i++) {
             printf("[%ld]: ", i);
-            v->ops.Print(v->buffer->arr[i]);
+            v->ops.Print(v->buffer->arr[i], stdout);
         }
     }
     else {  
         for(int i = 0; i < 5; i++) {
             printf("[%d]: ", i);
-            v->ops.Print(v->buffer->arr[i]);            
+            v->ops.Print(v->buffer->arr[i], stdout);            
         }
         printf(" ..skipping the middle.. ");
         for(size_t i = v->buffer->size-5; i < v->buffer->size; i++) {
             printf("[%ld]: ", i);
-            v->ops.Print(v->buffer->arr[i]);            
+            v->ops.Print(v->buffer->arr[i], stdout);            
         }       
     }
     printf(">>\n");
@@ -70,18 +70,18 @@ static void vector_fprint(vector v, FILE *fp){
     if(v->buffer->size < 20){
         for(size_t i = 0; i < v->buffer->size; i++) {
             fprintf(fp, "[%ld]: ", i);
-            v->ops.Print(v->buffer->arr[i]);
+            v->ops.Print(v->buffer->arr[i], fp);
         }
     }
     else {  
         for(int i = 0; i < 5; i++) {
             fprintf(fp, "[%d]: ", i);
-            v->ops.Print(v->buffer->arr[i]);            
+            v->ops.Print(v->buffer->arr[i], fp);            
         }
-        printf(" ..skipping the middle.. ");
+        fprintf(fp, "%s", "..skipping the middle.. ");
         for(size_t i = v->buffer->size-5; i < v->buffer->size; i++) {
             fprintf(fp, "[%ld]: ", i);
-            v->ops.Print(v->buffer->arr[i]);            
+            v->ops.Print(v->buffer->arr[i],fp);            
         }       
     }
     fprintf(fp, "%s", ">>\n");
@@ -234,7 +234,7 @@ static void *vectorIntCopy(const void *x) {
     return  (void *)temp; 
 }
 static void vectorIntDelete(void *x) { free((int *)x); }
-static void vectorIntPrint(const void *x){ printf("%d ", *(int *)x);}
+static void vectorIntPrint(const void *x, FILE *fp){ fprintf(fp, "%d ", *(int *)x);}
 static int vectorIntCompare(const void *x, const void *y){ 
     int *xv = *(int **)x;
     int *yv = *(int **)y;
@@ -248,7 +248,7 @@ VectorContentsOperations VectorIntOps = {.Equal=vectorIntEqual, .Copy=vectorIntC
 static int vectorStringEqual(const void *x, const void *y){ return !strcmp((const char *) x, (const char *) y);}    
 static void *vectorStringCopy(const void *x){ return strdup((char *)x);}
 static void vectorStringFree(void *x) { free((char *)x); }
-static void vectorStringPrint(const void *x){ printf("%s ", (char *)x);}
+static void vectorStringPrint(const void *x, FILE *fp){ fprintf(fp, "%s ", (char *)x);}
 static int vectorStringCompare(const void *x, const void *y){ return(strcmp(*(const char **)x, *(const char **)y));}
 
 VectorContentsOperations VectorStringOps = { .Equal = vectorStringEqual, 
