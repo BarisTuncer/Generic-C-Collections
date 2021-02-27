@@ -4,7 +4,7 @@ if(ENABLE_TESTING)
     add_executable(test_vector test_vector.c)
     target_compile_options(test_vector PUBLIC "-fsanitize=address" "-g" "-O1" "-fno-omit-frame-pointer")
     target_compile_definitions(test_vector PUBLIC TESTING)
-    target_compile_definitions(test_vector PUBLIC TEST_LOGS_DIR="${PROJECT_SOURCE_DIR}/tests")
+    target_compile_definitions(test_vector PUBLIC TEST_LOGS_DIR="${PROJECT_SOURCE_DIR}/build")
     target_link_libraries(test_vector asan vector m log cmocka)     # m is for math library
     add_test(NAME test_vector COMMAND test_vector)
     set_tests_properties(test_vector PROPERTIES TIMEOUT 30)
