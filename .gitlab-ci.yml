@@ -41,9 +41,10 @@ test:
   script:
     - cd build
     - make test
-      expire_in: 10 mins
-      paths:
-        - build/*
+  artifacts:
+    expire_in: 10 mins
+    paths:
+      - build/*
 
 analyze:
   stage: analyze
