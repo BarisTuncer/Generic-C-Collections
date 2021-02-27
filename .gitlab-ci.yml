@@ -3,7 +3,7 @@ stages:
   - build_test
 
 build_test:
-  stage: build
+  stage: build_test
   tags:
     - linux
   # instead of calling g++ directly you can also use some build toolkit like make
