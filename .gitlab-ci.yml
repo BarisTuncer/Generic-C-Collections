@@ -50,7 +50,7 @@ test:
     - mkdir -p /opt/cmake
     - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C /opt/cmake
     - ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
-    - cd build && ctest
+    - cd build && make test
   dependencies:
     - build
   artifacts:
