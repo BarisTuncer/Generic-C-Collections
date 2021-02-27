@@ -30,7 +30,7 @@ build:
     - cmake ..
     - make
     - make test
-    - make vector_test
+    - make vector_coverage
   artifacts:
       expire_in: 10 mins
       paths:
