@@ -18,15 +18,15 @@ build:
     # install cmocka
     - wget http://git.cryptomilk.org/projects/cmocka.git/snapshot/master.tar.gz
     - tar -xvf master.tar.gz
-    - cd master
-    - mkdir build
-    - cd build
+    - cd master  
+    - mkdir build 
+    - cd build   
     - cmake ..
     - make all install
+    - cd ..      
     - cd ..
     - ldconfig
   script:
-    - rm -r build
     - mkdir build
     - cd build
     - cmake ..
@@ -37,7 +37,6 @@ build:
 test:
   stage: test
   script:
-    - cd build
     - make test
   artifacts:
       expire_in: 2 mins
@@ -45,7 +44,6 @@ test:
 analyze:
   stage: analyze
   script:
-    - cd build
     - make vector_coverage
   artifacts:
       expire_in: 2 mins
