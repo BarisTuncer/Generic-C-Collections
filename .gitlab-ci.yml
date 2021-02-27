@@ -13,9 +13,15 @@ build:
     # install build toolkit ( libasan5 for  adress sanitizer, gcovr ggcov lcov for code coverage)
     - apt update && apt -y install make libasan5 gcc gcovr lcov
     # We will install latest CMake
-    - mkdir -p $HOME/.local
-    - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/.local
-    - export PATH=$HOME/.local/bin:$PATH
+    - apt purge --auto-remove cmake
+    - version=3.19
+    - build=1
+    - mkdir ~/temp
+    - cd ~/temp
+    - wget https://cmake.org/files/v$version/cmake-$version.$build-Linux-x86_64.sh 
+    - mkdir /opt/cmake
+    - sh cmake-$version.$build-Linux-x86_64.sh --prefix=/opt/cmake
+    - ln -s /opt/cmake/bin/cmake /usr/local/bin/cmake
     # install cmocka
     - wget http://git.cryptomilk.org/projects/cmocka.git/snapshot/master.tar.gz
     - tar -xvf master.tar.gz
@@ -37,7 +43,6 @@ build:
       expire_in: 10 mins
       paths:
       - build/
-      - $HOME/.local
 
 test:
   stage: test
@@ -45,9 +50,6 @@ test:
     - linux
   script:
     # We will install latest CMake
-    - mkdir -p $HOME/.local
-    - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/.local
-    - export PATH=$HOME/.local/bin:$PATH
     - cd build && ctest
   dependencies:
     - build
@@ -61,10 +63,6 @@ analyze:
   tags:
     - linux
   script:
-    # We will install latest CMake
-    - mkdir -p $HOME/.local
-    - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/.local
-    - export PATH=$HOME/.local/bin:$PATH
     - cd build && make vector_coverage
   dependencies:
     - test
