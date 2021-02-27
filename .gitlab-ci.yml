@@ -1,8 +1,6 @@
 # setting up docker image --> coming soon
 stages:
   - build
-  - test
-  - analyze
 
 build:
   stage: build
@@ -31,28 +29,10 @@ build:
     - cd build
     - cmake ..
     - make
+    - make test
+    - make vector_test
   artifacts:
       expire_in: 10 mins
       paths:
-        - build/*
-
-test:
-  stage: test
-  script:
-    - cd build
-    - make test
-  artifacts:
-    expire_in: 10 mins
-    paths:
-      - build/*
-
-analyze:
-  stage: analyze
-  script:
-    - cd build
-    - make vector_coverage
-  artifacts:
-    expire_in: 10 mins
-    paths:
       - build/vector_coverage/*
       - build/test_vector_logs.txt
