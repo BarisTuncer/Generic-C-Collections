@@ -43,7 +43,7 @@ build:
       expire_in: 10 mins
       paths:
       - build/
-
+      - bin/
 test:
   stage: test
   tags:
@@ -57,6 +57,7 @@ test:
     expire_in: 10 mins
     paths:
       - build/
+      - bin/
 
 analyze:
   stage: analyze
