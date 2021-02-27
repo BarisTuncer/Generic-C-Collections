@@ -32,7 +32,7 @@ build:
     - make test
     - make vector_coverage
   artifacts:
-      expire_in: 10 mins
+      expire_in: 1 week
       paths:
       - build/vector_coverage/*
       - build/test_vector_logs.txt
