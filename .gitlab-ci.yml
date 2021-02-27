@@ -1,0 +1,33 @@
+# setting up docker image --> coming soon
+stages:
+  - build
+
+build:
+  stage: build
+  # instead of calling g++ directly you can also use some build toolkit like make
+  # install the necessary build tools when needed
+  before_script:
+    # install build toolkit ( libasan5 for  adress sanitizer, gcovr ggcov lcov for code coverage)
+    - apt update && apt -y install make libasan5 gcc gcovr lcov
+    # We will install latest CMake
+    - mkdir -p $HOME/.local
+    - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/.local
+    - export PATH=$HOME/.local/bin:$PATH
+    # install cmocka
+    - wget http://git.cryptomilk.org/projects/cmocka.git/snapshot/master.tar.gz
+    - tar -xvf master.tar.gz
+    - cd master
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make all install
+    - cd ..
+    - ldconfig
+  script:
+    - rm -r build
+    - mkdir build
+    - cd build
+    - cmake ..
+    - make
+  artifacts:
+      expire_in: 10 mins
