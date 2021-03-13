@@ -19,11 +19,11 @@ if(ENABLE_TESTING)
                 BASE_DIRECTORY "${PROJECT_SOURCE_DIR}/src"
                 EXCLUDE "dir2/*")
         ]]
-        set(COVERAGE_EXCLUDES "examples/*" "tests/*")
+        set(COVERAGE_EXCLUDES "examples/*" "tests/*") 
         setup_target_for_coverage_gcovr_html(
-            NAME vector_coverage  
+            NAME vector_coverage_html  
             EXECUTABLE test_vector
             BASE_DIRECTORY "${CMAKE_SOURCE_DIR}/libs/src"
         )
-        endif()
+    endif()
 endif()

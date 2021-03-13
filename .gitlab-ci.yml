@@ -40,3 +40,4 @@ build_test:
       paths:
         - build/vector_coverage/*
         - build/test_vector_logs.txt
+
