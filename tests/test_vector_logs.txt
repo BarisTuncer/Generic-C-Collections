@@ -3,44 +3,44 @@
 	BasicTestFor_PusbackAndPopBack
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:72: pushing i = 1
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:75: pushing i = 2
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:78: pushing i = 3
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:72: pushing i = 1
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:75: pushing i = 2
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:78: pushing i = 3
 <<[0]: 1 [1]: 2 [2]: 3 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:84: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:84: pop back
 <<[0]: 1 [1]: 2 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:89: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:89: pop back
 <<[0]: 1 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:94: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:94: pop back
 <<>>
 
 #######################################
 	StressTestFor_IntPushBackAndPopBack
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:103: starting push backs
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:107: push back ends
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:103: starting push backs
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:107: push back ends
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 ..skipping the middle.. [99995]: 99995 [99996]: 99996 [99997]: 99997 [99998]: 99998 [99999]: 99999 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:110: starting pop backs
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:116: pop back ends
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:110: starting pop backs
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:116: pop back ends
 <<>>
 
 #######################################
 	BasicTestFor_Erase
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:123: starting push backs for v
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:127: starting push backs for w
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:131: push backs ends
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:123: starting push backs for v
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:127: starting push backs for w
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:131: push backs ends
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 [9]: 9 >>
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 [9]: 9 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:137: Pop back from w
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:137: Pop back from w
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:141: Push back w
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:141: Push back w
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 [9]: 9 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:145: erasing last element from w
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:145: erasing last element from w
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:148: Push back w
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:148: Push back w
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 [9]: 9 >>
 <<[0]: 0 [1]: 1 [2]: 2 [3]: 3 [4]: 4 [5]: 5 [6]: 6 [7]: 7 [8]: 8 [9]: 9 >>
 
@@ -48,51 +48,51 @@
 	BasicTestFor_IntSort
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:177: before sorting
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:177: before sorting
 <<[0]: 5 [1]: 843 [2]: 12 >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:180: after sorting
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:180: after sorting
 <<[0]: 5 [1]: 12 [2]: 843 >>
 
 #######################################
 	BasicTestFor_BackFront
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:190: Starting push backs
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:190: Starting push backs
 <<[0]: Keep [1]: on [2]: Rock! >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:200: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:200: pop back
 <<[0]: Keep [1]: on >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:206: push front
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:206: push front
 <<[0]: Hey kids! [1]: Keep [2]: on >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:210: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:210: pop back
 <<[0]: Hey kids! [1]: Keep >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:215: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:215: pop back
 <<[0]: Hey kids! >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:221: pop back
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:221: pop back
 <<>>
 
 #######################################
 	StressTestFor_PushBackPopBackCapacity
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:231: Stress test push_backs starts
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:238: Stress test push_backs ends
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:231: Stress test push_backs starts
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:238: Stress test push_backs ends
 <<[0]: Keep [1]: on [2]: Rock [3]: in [4]: the ..skipping the middle.. [99995]: Keep [99996]: on [99997]: Rock [99998]: in [99999]: the >>
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:245: Checking capacity
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:247: Stress test pop_backs starts
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:256: Stress test pop_backs ends
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:245: Checking capacity
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:247: Stress test pop_backs starts
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:256: Stress test pop_backs ends
 <<>>
 
 #######################################
 	ExpectErrorTest
 #######################################
 
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:397: This tests checks whether we get exectuion stops in case of an index out of bound
-2021-02-26 01:27:00 WARN  ../tests/test_vector.c:398: ######### Expecting Error logs in stdout ###########
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:401: Testing set error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:410: Testing erase error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:418: Testing erase error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:426: Testing at error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:434: Testing get error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:442: Testing set error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:450: Testing swap error
-2021-02-26 01:27:00 INFO  ../tests/test_vector.c:458: Testing insert error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:397: This tests checks whether we get exectuion stops in case of an index out of bound
+2021-03-13 11:54:05 WARN  ../tests/test_vector.c:398: ######### Expecting Error logs in stdout ###########
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:401: Testing set error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:410: Testing erase error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:418: Testing erase error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:426: Testing at error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:434: Testing get error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:442: Testing set error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:450: Testing swap error
+2021-03-13 11:54:05 INFO  ../tests/test_vector.c:458: Testing insert error
