@@ -33,7 +33,7 @@ build_test:
     - cmake ..
     - make
     - make test
-    - make vector_coverage
+    - make vector_coverage_html
   # artifacts parameter informs about the files and folders that must be kept after the job is done 
   artifacts:
       expire_in: 30 mins
