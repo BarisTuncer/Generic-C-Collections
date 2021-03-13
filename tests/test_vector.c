@@ -98,7 +98,7 @@ void BasicTestFor_PusbackAndPopBack(){
 }
 
 void StressTestFor_IntPushBackAndPopBack(){
-    // let's do some stress testing
+    // stress testing
     set_header(fp , __func__);
     log_info("starting push backs");
     for(i = 0; i < STRESS_TEST_ITERATIONS; i++) {
