@@ -1,35 +1,43 @@
 # setting up docker image --> coming soon
 stages:
-  - build
+  - build_test
 
-build:
-  stage: build
+build_test:
+  stage: build_test
+  tags:
+    - linux
   # instead of calling g++ directly you can also use some build toolkit like make
   # install the necessary build tools when needed
   before_script:
     # install build toolkit ( libasan5 for  adress sanitizer, gcovr ggcov lcov for code coverage)
     - apt update && apt -y install make libasan5 gcc gcovr lcov
     # We will install latest CMake
+    - apt purge --auto-remove cmake
     - mkdir -p $HOME/.local
     - curl -s "https://cmake.org/files/v3.19/cmake-3.19.4-Linux-x86_64.tar.gz" | tar --strip-components=1 -xz -C $HOME/.local
     - export PATH=$HOME/.local/bin:$PATH
     # install cmocka
     - wget http://git.cryptomilk.org/projects/cmocka.git/snapshot/master.tar.gz
     - tar -xvf master.tar.gz
-    - cd master
-    - mkdir build
-    - cd build
+    - cd master  
+    - mkdir build 
+    - cd build   
     - cmake ..
     - make all install
+    - cd ..      
     - cd ..
     - ldconfig
   script:
-    - rm -r build
     - mkdir build
     - cd build
     - cmake ..
     - make
+    - make test
+    - make vector_coverage
+  # artifacts parameter informs about the files and folders that must be kept after the job is done 
   artifacts:
-      expire_in: 10 mins
-
+      expire_in: 30 mins
+      paths:
+        - build/vector_coverage/*
+        - build/test_vector_logs.txt
 
