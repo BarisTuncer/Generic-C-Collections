@@ -10,7 +10,7 @@ if(ENABLE_TESTING)
     enable_testing()
 endif()
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 
 option(ENABLE_CODE_COVERAGE "Perform coverage report after build" ON)
 
