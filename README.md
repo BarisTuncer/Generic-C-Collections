@@ -5,6 +5,7 @@ CPP like Generic C collections library for educational purposes.
 
 Please, see **[funwithvectors.c]** to see how to use the libraries.
 
+
 Note the wrapping of `vector_create` and usage of `atexit` to delegate the responsibility of freeing memory to `clean` function.
 This way user need not worry to call `vector_destroy` for each vector created.
 
